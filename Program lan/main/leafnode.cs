@@ -6,44 +6,58 @@ public class LeafNode : Node
     {
         if (Rectangles.Count < 5)
         {
+            // If the node is not full, insert the rectangle directly
             Rectangles.Add(rect);
         }
         else
         {
-            // Split the node and move existing rectangles into new leaf nodes
-            // Create child nodes and distribute rectangles accordingly.
+            // If the node is full, we need to split it and redistribute rectangles
+            SplitNode();
+
+            // After splitting, insert the rectangle into the appropriate child node
+            InsertIntoChildNode(rect);
         }
     }
 
-    public override void Delete(int x, int y)
+    private void SplitNode()
     {
-        var rect = Rectangles.FirstOrDefault(r => r.X == x && r.Y == y);
-        if (rect != null)
+        // Calculate the midpoint of the current node space
+        int midX = (XMin + XMax) / 2;
+        int midY = (YMin + YMax) / 2;
+
+        // Create four child nodes representing the four quadrants of the current node's space
+        Children = new List<Node>
         {
-            Rectangles.Remove(rect);
-        }
-    }
+            new LeafNode(XMin, midY, midX, YMax),  // Top-left
+            new LeafNode(midX, midY, XMax, YMax),  // Top-right
+            new LeafNode(XMin, YMin, midX, midY),  // Bottom-left
+            new LeafNode(midX, YMin, XMax, midY)   // Bottom-right
+        };
 
-    public override Rectangle Find(int x, int y)
-    {
-        return Rectangles.FirstOrDefault(r => r.X == x && r.Y == y);
-    }
-
-    public override void Update(int x, int y, int length, int width)
-    {
-        var rect = Rectangles.FirstOrDefault(r => r.X == x && r.Y == y);
-        if (rect != null)
-        {
-            rect.Length = length;
-            rect.Width = width;
-        }
-    }
-
-    public override void Dump(int level)
-    {
+        // Redistribute existing rectangles to the child nodes based on their positions
         foreach (var rect in Rectangles)
         {
-            Console.WriteLine(new string('\t', level) + $"Rectangle at {rect.X}, {rect.Y}: {rect.Length}x{rect.Width}");
+            InsertIntoChildNode(rect);
         }
+
+        // Clear the current node's rectangles as they've been moved to the children
+        Rectangles.Clear();
     }
-}
+
+    private void InsertIntoChildNode(Rectangle rect)
+    {
+        // Determine which child node (quadrant) the rectangle should go into
+        Node targetChild = null;
+
+        // Check the position of the rectangle and assign it to the correct child node
+        if (rect.XMin < (XMin + XMax) / 2 && rect.YMax >= (YMin + YMax) / 2)
+        {
+            targetChild = Children[0];  // Top-left quadrant
+        }
+        else if (rect.XMin >= (XMin + XMax) / 2 && rect.YMax >= (YMin + YMax) / 2)
+        {
+            targetChild = Children[1];  // Top-right quadrant
+        }
+        else if (rect.XMin < (XMin + XMax) / 2 && rect.YMax < (YMin + YMax) / 2)
+        {
+            targe
