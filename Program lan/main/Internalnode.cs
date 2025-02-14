@@ -8,9 +8,81 @@ public class InternalNode : Node
     }
 
     public override void Insert(Rectangle rect)
+{
+    if (Rectangles.Count < 5)
     {
-        // Similar to LeafNode, but it will insert the rectangle into one of the child nodes.
+        // If the node has fewer than 5 rectangles, simply insert the new one
+        Rectangles.Add(rect);
     }
+    else
+    {
+        // Split the node into 4 child nodes 
+        SplitNode();
+        
+        // Now insert the rectangle into the appropriate child node
+        InsertIntoChildNode(rect);
+    }
+}
+
+private void SplitNode()
+{
+    // Define the midpoint of the current space
+    int midX = (XMin + XMax) / 2;
+    int midY = (YMin + YMax) / 2;
+
+    // Create four new child LeafNodes representing the quadrants
+    Children = new List<Node>
+    {
+        new LeafNode(XMin, midX, midY, YMax),  // Top-left quadrant
+        new LeafNode(midX, XMax, midY, YMax),  // Top-right quadrant
+        new LeafNode(XMin, midX, YMin, midY),  // Bottom-left quadrant
+        new LeafNode(midX, XMax, YMin, midY)   // Bottom-right quadrant
+    };
+
+    // distribute the existing rectangles to the correct child nodes
+    foreach (var rectangle in Rectangles)
+    {
+        InsertIntoChildNode(rectangle);
+    }
+
+    // Clear the current list of rectangles as they have been moved to child nodes
+    Rectangles.Clear();
+}
+
+private void InsertIntoChildNode(Rectangle rect)
+{
+    // Determine which child node (quadrant) the rectangle should go into
+    Node targetChild = null;
+
+    // Check the position of the rectangle and assign it to the appropriate child
+    if (rect.XMin < (XMin + XMax) / 2 && rect.YMax >= (YMin + YMax) / 2)
+    {
+        targetChild = Children[0];  // Top-left quadrant
+    }
+    else if (rect.XMin >= (XMin + XMax) / 2 && rect.YMax >= (YMin + YMax) / 2)
+    {
+        targetChild = Children[1];  // Top-right quadrant
+    }
+    else if (rect.XMin < (XMin + XMax) / 2 && rect.YMax < (YMin + YMax) / 2)
+    {
+        targetChild = Children[2];  // Bottom-left quadrant
+    }
+    else if (rect.XMin >= (XMin + XMax) / 2 && rect.YMax < (YMin + YMax) / 2)
+    {
+        targetChild = Children[3];  // Bottom-right quadrant
+    }
+
+    // Insert the rectangle into the target child node
+    if (targetChild is LeafNode leafNode)
+    {
+        leafNode.Insert(rect);
+    }
+    else if (targetChild is InternalNode internalNode)
+    {
+        internalNode.Insert(rect);
+    }
+}
+
 
     public override void Delete(int x, int y)
     {
