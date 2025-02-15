@@ -19,6 +19,38 @@ public class LeafNode : Node
     }
   }
 
+  public override void Delete(int x, int y)
+  {
+    var rect = Rectangles.FirstOrDefault(r => r.X == x && r.Y == y);
+    if (rect != null)
+    {
+      Rectangles.Remove(rect);
+    }
+  }
+
+  public override void Dump(int level)
+  {
+    foreach (var rect in Rectangles)
+    {
+      Console.WriteLine(new string('\t', level) + $"Rectangle at {rect.X}, {rect.Y}: {rect.Length}x{rect.Width}");
+    }
+  }
+
+  public override void Update(int x, int y, int length, int width)
+  {
+    var rect = Rectangles.FirstOrDefault(r => r.X == x && r.Y == y);
+    if (rect != null)
+    {
+      rect.Length = length;
+      rect.Width = width;
+    }
+  }
+
+  public override Rectangle Find(int x, int y)
+  {
+    return Rectangles.FirstOrDefault(r => r.X == x && r.Y == y);
+  }
+
   private void SplitNode()
   {
     // Calculate the midpoint of the current node space
