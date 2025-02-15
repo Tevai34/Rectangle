@@ -34,7 +34,7 @@ public class Rectangle
     /// <param name="width">[TODO:description]</param>
     public Rectangle(int x, int y, int length, int width)
     {
-        // variables should begin with a lowercase letter.
+        // NOTE: variables should begin with a lowercase letter.
         // You can access variable of the class with the same 
         // name as parameters using: this.<variable name>
         this.x = x;
