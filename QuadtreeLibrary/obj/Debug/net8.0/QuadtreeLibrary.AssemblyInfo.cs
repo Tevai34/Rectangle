@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QuadtreeLibrary")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f589bd3fcf3d4bd0bec724788f8baa84cea5109e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e726c5b800c3830c00e1025021cdac9628189882")]
 [assembly: System.Reflection.AssemblyProductAttribute("QuadtreeLibrary")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuadtreeLibrary")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
