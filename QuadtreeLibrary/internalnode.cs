@@ -1,14 +1,34 @@
 namespace Quadtree;
 
+/// <summary>
+/// [TODO:description]
+/// </summary>
 public class InternalNode : Node
 {
+    /// <summary>
+    /// [TODO:description]
+    /// </summary>
     public List<Node> Children { get; set; }
 
+    /// <summary>
+    /// [TODO:description]
+    /// </summary>
+    /// <param name="xMin">[TODO:description]</param>
+    /// <param name="yMin">[TODO:description]</param>
+    /// <param name="xMax">[TODO:description]</param>
+    /// <param name="yMax">[TODO:description]</param>
     public InternalNode(int xMin, int yMin, int xMax, int yMax) : base(xMin, yMin, xMax, yMax)
     {
+        //NOTE: you *might* need an additional property:
+        //  - threshold: The amount of rectangles that a node should hold before it splits.
+        //  You may need it when you make leaf nodes for their constructor.
         Children = new List<Node>();
     }
 
+    /// <summary>
+    /// [TODO:description]
+    /// </summary>
+    /// <param name="rect">[TODO:description]</param>
     public override void Insert(Rectangle rect)
     {
         if (Rectangles.Count < 5)
@@ -26,6 +46,9 @@ public class InternalNode : Node
         }
     }
 
+    /// <summary>
+    /// [TODO:description]
+    /// </summary>
     private void SplitNode()
     {
         // Define the midpoint of the current space
@@ -51,6 +74,10 @@ public class InternalNode : Node
         Rectangles.Clear();
     }
 
+    /// <summary>
+    /// [TODO:description]
+    /// </summary>
+    /// <param name="rect">[TODO:description]</param>
     private void InsertIntoChildNode(Rectangle rect)
     {
         // Determine which child node (quadrant) the rectangle should go into
@@ -86,6 +113,11 @@ public class InternalNode : Node
     }
 
 
+    /// <summary>
+    /// [TODO:description]
+    /// </summary>
+    /// <param name="x">[TODO:description]</param>
+    /// <param name="y">[TODO:description]</param>
     public override void Delete(int x, int y)
     {
         foreach (var child in Children)
@@ -94,6 +126,12 @@ public class InternalNode : Node
         }
     }
 
+    /// <summary>
+    /// [TODO:description]
+    /// </summary>
+    /// <param name="x">[TODO:description]</param>
+    /// <param name="y">[TODO:description]</param>
+    /// <returns>[TODO:description]</returns>
     public override Rectangle Find(int x, int y)
     {
         foreach (var child in Children)
@@ -105,6 +143,13 @@ public class InternalNode : Node
         return null;
     }
 
+    /// <summary>
+    /// [TODO:description]
+    /// </summary>
+    /// <param name="x">[TODO:description]</param>
+    /// <param name="y">[TODO:description]</param>
+    /// <param name="length">[TODO:description]</param>
+    /// <param name="width">[TODO:description]</param>
     public override void Update(int x, int y, int length, int width)
     {
         foreach (var child in Children)
@@ -113,6 +158,10 @@ public class InternalNode : Node
         }
     }
 
+    /// <summary>
+    /// [TODO:description]
+    /// </summary>
+    /// <param name="level">[TODO:description]</param>
     public override void Dump(int level)
     {
         Console.WriteLine(new string('\t', level) + $"Internal Node at [{xMin},{yMin}] to [{xMax},{yMax}]");
