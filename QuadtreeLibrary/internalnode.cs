@@ -57,19 +57,19 @@ public class InternalNode : Node
         Node targetChild = null;
 
         // Check the position of the rectangle and assign it to the appropriate child
-        if (rect.XMin < (XMin + XMax) / 2 && rect.YMax >= (YMin + YMax) / 2)
+        if (rect.x < (xMin + xMax) / 2 && rect.y >= (yMin + yMax) / 2)
         {
             targetChild = Children[0];  // Top-left quadrant
         }
-        else if (rect.XMin >= (XMin + XMax) / 2 && rect.YMax >= (YMin + YMax) / 2)
+        else if (rect.x >= (xMin + xMax) / 2 && rect.y >= (yMin + yMax) / 2)
         {
             targetChild = Children[1];  // Top-right quadrant
         }
-        else if (rect.XMin < (XMin + XMax) / 2 && rect.YMax < (YMin + YMax) / 2)
+        else if (rect.x < (xMin + xMax) / 2 && rect.y < (yMin + yMax) / 2)
         {
             targetChild = Children[2];  // Bottom-left quadrant
         }
-        else if (rect.XMin >= (XMin + XMax) / 2 && rect.YMax < (YMin + YMax) / 2)
+        else if (rect.x >= (xMin + xMax) / 2 && rect.y < (yMin + yMax) / 2)
         {
             targetChild = Children[3];  // Bottom-right quadrant
         }
