@@ -29,16 +29,16 @@ public class InternalNode : Node
     private void SplitNode()
     {
         // Define the midpoint of the current space
-        int midX = (XMin + XMax) / 2;
-        int midY = (YMin + YMax) / 2;
+        int midX = (xMin + xMax) / 2;
+        int midY = (yMin + yMax) / 2;
 
         // Create four new child LeafNodes representing the quadrants
         Children = new List<Node>
     {
-        new LeafNode(XMin, midX, midY, YMax),  // Top-left quadrant
-        new LeafNode(midX, XMax, midY, YMax),  // Top-right quadrant
-        new LeafNode(XMin, midX, YMin, midY),  // Bottom-left quadrant
-        new LeafNode(midX, XMax, YMin, midY)   // Bottom-right quadrant
+        new LeafNode(xMin, midX, midY, yMax),  // Top-left quadrant
+        new LeafNode(midX, xMax, midY, yMax),  // Top-right quadrant
+        new LeafNode(xMin, midX, yMin, midY),  // Bottom-left quadrant
+        new LeafNode(midX, xMax, yMin, midY)   // Bottom-right quadrant
     };
 
         // distribute the existing rectangles to the correct child nodes
@@ -115,7 +115,7 @@ public class InternalNode : Node
 
     public override void Dump(int level)
     {
-        Console.WriteLine(new string('\t', level) + $"Internal Node at [{XMin},{YMin}] to [{XMax},{YMax}]");
+        Console.WriteLine(new string('\t', level) + $"Internal Node at [{xMin},{yMin}] to [{xMax},{yMax}]");
         foreach (var child in Children)
         {
             child.Dump(level + 1);
