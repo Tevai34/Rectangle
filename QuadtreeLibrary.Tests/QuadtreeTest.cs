@@ -1,4 +1,4 @@
-namespace QuadtreeLibrary.Tests;
+namespace Quadtree.Tests;
 
 public class QuadtreeTests
 {
