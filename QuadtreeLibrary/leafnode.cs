@@ -45,7 +45,7 @@ public class LeafNode : Node
     /// </summary>
     /// <param name="x">[TODO:description]</param>
     /// <param name="y">[TODO:description]</param>
-    public override void Delete(int x, int y) //NOTE: you should modive this to take a Rectangle parameter insead.)
+    public override void Delete(int x, int y) //NOTE: you should modify this to take a Rectangle parameter instead.
     {
         var rect = Rectangles.FirstOrDefault(r => r.x == x && r.y == y);
         if (rect != null)
