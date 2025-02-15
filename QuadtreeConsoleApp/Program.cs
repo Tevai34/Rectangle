@@ -66,6 +66,8 @@ class Program
                         if (rect != null)
                         {
                             quadtree.Delete(rect); // Delete the rectangle
+                            //NOTE: you need to add a delete function to
+                            //leafnode that takes a Rectangle.
                         }
                         else
                         {
