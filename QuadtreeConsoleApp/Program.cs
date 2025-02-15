@@ -1,6 +1,5 @@
-﻿using System;
-using FileReaderParserLibrary;
-using QuadtreeLibrary;
+﻿using FileReaderParserLibrary;
+using Quadtree;
 
 namespace QuadtreeCLI;
 
@@ -21,11 +20,15 @@ class Program
         string filePath = args[0];
 
         // Parse the commands from the file
-        var commandParser = new FileReaderParserLibrary();
+        var commandParser = new CommandParser();
         var commands = commandParser.ParseCommands(filePath);
 
         // Initialize a quadtree with the initial space (100x100, centered at (0, 0))
         var initialSpace = new Rectangle(-50, -50, 100, 100); // The root space of the quadtree
+        //NOTE: I recommend you add an additional constructor to the LeafNode class that takes
+        //a threshold and a rectangle space.
+        //
+        //NOTE: You'll want a real quadtree class, otherwise, things will get complicated.
         var quadtree = new LeafNode(5, initialSpace); // Threshold of 5 rectangles before split
 
         // Process each command from the file
@@ -84,7 +87,7 @@ class Program
                         var rect = quadtree.Find(x, y); // Find the rectangle
                         if (rect != null)
                         {
-                            Console.WriteLine($"Rectangle at {x}, {y}: {rect.Width}x{rect.Height}");
+                            Console.WriteLine($"Rectangle at {x}, {y}: {rect.length}x{rect.width}");
                         }
                         else
                         {
