@@ -11,7 +11,7 @@ if (args.Length != 1)
 string filePath = args[0];
 
 // Parse the commands from the file
-var commandParser = new commandParser();
+var commandParser = new FileReaderParserLibrary();
 var commands = commandParser.ParseCommands(filePath);
 
 // Initialize a quadtree with the initial space (100x100, centered at (0, 0))
