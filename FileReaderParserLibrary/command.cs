@@ -1,8 +1,15 @@
 namespace FileReaderParserLibrary;
 
+/// <summary>
+/// [TODO:description]
+/// </summary>
 public class CommandParser
 {
-    // Method to read and parse the file containing commands
+    /// <summary>
+    /// [TODO:description]
+    /// </summary>
+    /// <param name="filePath">[TODO:description]</param>
+    /// <returns>[TODO:description]</returns>
     public List<string> ParseCommands(string filePath)
     {
         var commands = new List<string>();
