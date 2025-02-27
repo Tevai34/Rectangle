@@ -1,4 +1,4 @@
-﻿using FileReaderParserLibrary;
+using FileReaderParserLibrary;
 using Quadtree;
 
 namespace QuadtreeCLI;
@@ -48,7 +48,8 @@ class Program
                         int height = int.Parse(commandParts[4]);
 
                         var rect = new Rectangle(x, y, width, height);
-                        quadtree.Insert(rect); // Insert the rectangle into the quadtree
+                        // Insert the rectangle into the quadtree
+                        quadtree.Insert(rect); 
                     }
                     else
                     {
@@ -109,11 +110,13 @@ class Program
                         int y = int.Parse(commandParts[2]);
                         int newWidth = int.Parse(commandParts[3]);
                         int newHeight = int.Parse(commandParts[4]);
-
-                        var rect = quadtree.Find(x, y); // Find the rectangle
+                        
+                        // Find the rectangle
+                        var rect = quadtree.Find(x, y); 
                         if (rect != null)
                         {
-                            quadtree.Update(x, y, newWidth, newHeight); // Update the rectangle
+                            // Update the rectangle
+                            quadtree.Update(x, y, newWidth, newHeight); 
                         }
                         else
                         {
@@ -127,7 +130,8 @@ class Program
                     break;
 
                 case "dump":
-                    quadtree.Dump(0); // Dump the entire quadtree structure
+                // Dump the entire quadtree structure
+                    quadtree.Dump(0); 
                     break;
 
                 default:
