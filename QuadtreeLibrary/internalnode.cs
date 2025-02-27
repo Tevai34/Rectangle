@@ -1,54 +1,44 @@
 namespace Quadtree;
 
-/// <summary>
-/// [TODO:description]
-/// </summary>
+/// A class representing an internal node in the quadtree. This node contains child nodes,
+/// and is responsible for splitting when the number of rectangles exceeds the threshold.
 public class InternalNode : Node
 {
-    /// <summary>
-    /// [TODO:description]
-    /// </summary>
     public List<Node> Children { get; set; }
+    private int threshold;
 
-    /// <summary>
-    /// [TODO:description]
-    /// </summary>
-    /// <param name="xMin">[TODO:description]</param>
-    /// <param name="yMin">[TODO:description]</param>
-    /// <param name="xMax">[TODO:description]</param>
-    /// <param name="yMax">[TODO:description]</param>
-    public InternalNode(int xMin, int yMin, int xMax, int yMax) : base(xMin, yMin, xMax, yMax)
+    /// Initializes a new instance of the InternalNode class with given space and threshold.
+    /// The minimum x-coordinate of the node's space.
+    /// The minimum y-coordinate of the node's space.
+    /// The maximum x-coordinate of the node's space.
+    /// The maximum y-coordinate of the node's space.
+    /// The threshold for the number of rectangles before splitting.
+    public InternalNode(int xMin, int yMin, int xMax, int yMax, int threshold) : base(xMin, yMin, xMax, yMax)
     {
-        //NOTE: you *might* need an additional property:
-        //  - threshold: The amount of rectangles that a node should hold before it splits.
-        //  You may need it when you make leaf nodes for their constructor.
-        Children = new List<Node>();
+        this.threshold = threshold;
+        this.Children = new List<Node>();
     }
 
-    /// <summary>
-    /// [TODO:description]
-    /// </summary>
-    /// <param name="rect">[TODO:description]</param>
+    /// Inserts a rectangle into the node. If the node exceeds the threshold, it splits into child nodes.
+    /// The rectangle to insert into the node.
     public override void Insert(Rectangle rect)
     {
-        if (Rectangles.Count < 5)
+        if (Rectangles.Count < threshold)
         {
-            // If the node has fewer than 5 rectangles, simply insert the new one
+            // If the node has fewer than the threshold, insert the rectangle directly
             Rectangles.Add(rect);
         }
         else
         {
-            // Split the node into 4 child nodes 
+            // Split the node into 4 child nodes if it exceeds the threshold
             SplitNode();
-
+            
             // Now insert the rectangle into the appropriate child node
             InsertIntoChildNode(rect);
         }
     }
 
-    /// <summary>
-    /// [TODO:description]
-    /// </summary>
+    /// Splits the node into 4 quadrants (child nodes) when the threshold is exceeded.
     private void SplitNode()
     {
         // Define the midpoint of the current space
@@ -57,14 +47,18 @@ public class InternalNode : Node
 
         // Create four new child LeafNodes representing the quadrants
         Children = new List<Node>
-    {
-        new LeafNode(xMin, midX, midY, yMax),  // Top-left quadrant
-        new LeafNode(midX, xMax, midY, yMax),  // Top-right quadrant
-        new LeafNode(xMin, midX, yMin, midY),  // Bottom-left quadrant
-        new LeafNode(midX, xMax, yMin, midY)   // Bottom-right quadrant
-    };
+        {
+            // Top-left quadrant
+            new LeafNode(threshold, new Rectangle(xMin, midY, midX, yMax)),
+            // Top-right quadrant
+            new LeafNode(threshold, new Rectangle(midX, midY, xMax, yMax)),
+            // Bottom-left quadrant
+            new LeafNode(threshold, new Rectangle(xMin, yMin, midX, midY)),
+            // Bottom-right quadrant
+            new LeafNode(threshold, new Rectangle(midX, yMin, xMax, midY))   
+        };
 
-        // distribute the existing rectangles to the correct child nodes
+        // Distribute the existing rectangles to the correct child nodes
         foreach (var rectangle in Rectangles)
         {
             InsertIntoChildNode(rectangle);
@@ -74,34 +68,35 @@ public class InternalNode : Node
         Rectangles.Clear();
     }
 
-    /// <summary>
-    /// [TODO:description]
-    /// </summary>
-    /// <param name="rect">[TODO:description]</param>
+    /// Inserts a rectangle into the appropriate child node based on its position.
+    /// The rectangle to insert into the child node.
     private void InsertIntoChildNode(Rectangle rect)
     {
-        // Determine which child node (quadrant) the rectangle should go into
         Node targetChild = null;
 
-        // Check the position of the rectangle and assign it to the appropriate child
+        // Determine which quadrant the rectangle belongs to and assign it to the correct child node
         if (rect.x < (xMin + xMax) / 2 && rect.y >= (yMin + yMax) / 2)
         {
-            targetChild = Children[0];  // Top-left quadrant
+            // Top-left quadrant
+            targetChild = Children[0];  
         }
         else if (rect.x >= (xMin + xMax) / 2 && rect.y >= (yMin + yMax) / 2)
         {
-            targetChild = Children[1];  // Top-right quadrant
+            // Top-right quadrant
+            targetChild = Children[1];  
         }
         else if (rect.x < (xMin + xMax) / 2 && rect.y < (yMin + yMax) / 2)
         {
-            targetChild = Children[2];  // Bottom-left quadrant
+            // Bottom-left quadrant
+            targetChild = Children[2];  
         }
         else if (rect.x >= (xMin + xMax) / 2 && rect.y < (yMin + yMax) / 2)
         {
-            targetChild = Children[3];  // Bottom-right quadrant
+            // Bottom-right quadrant
+            targetChild = Children[3];  
         }
 
-        // Insert the rectangle into the target child node
+        // Insert the rectangle into the target child node (either LeafNode or InternalNode)
         if (targetChild is LeafNode leafNode)
         {
             leafNode.Insert(rect);
@@ -112,61 +107,52 @@ public class InternalNode : Node
         }
     }
 
-
-    /// <summary>
-    /// [TODO:description]
-    /// </summary>
-    /// <param name="x">[TODO:description]</param>
-    /// <param name="y">[TODO:description]</param>
+    /// Deletes a rectangle based on its coordinates from the node.
     public override void Delete(int x, int y)
     {
+        /// The x-coordinate of the rectangle to delete.
+        /// The y-coordinate of the rectangle to delete.
         foreach (var child in Children)
         {
             child.Delete(x, y);
         }
     }
 
-    /// <summary>
-    /// [TODO:description]
-    /// </summary>
-    /// <param name="x">[TODO:description]</param>
-    /// <param name="y">[TODO:description]</param>
-    /// <returns>[TODO:description]</returns>
+    /// Finds a rectangle based on its coordinates in the node's children.
     public override Rectangle Find(int x, int y)
     {
         foreach (var child in Children)
         {
+            /// The x-coordinate of the rectangle to find.
+            /// The y-coordinate of the rectangle to find.
             var rect = child.Find(x, y);
             if (rect != null)
                 return rect;
         }
+        /// The rectangle found, or null if not found.
         return null;
     }
 
-    /// <summary>
-    /// [TODO:description]
-    /// </summary>
-    /// <param name="x">[TODO:description]</param>
-    /// <param name="y">[TODO:description]</param>
-    /// <param name="length">[TODO:description]</param>
-    /// <param name="width">[TODO:description]</param>
+    /// Updates the dimensions of a rectangle in the node.
+    /// The x-coordinate of the rectangle to update.
+    /// The y-coordinate of the rectangle to update.
     public override void Update(int x, int y, int length, int width)
     {
         foreach (var child in Children)
         {
+            /// The new length of the rectangle.
+            /// The new width of the rectangle.
             child.Update(x, y, length, width);
         }
     }
 
-    /// <summary>
-    /// [TODO:description]
-    /// </summary>
-    /// <param name="level">[TODO:description]</param>
+    /// Dumps the structure of the internal node and its children.
     public override void Dump(int level)
     {
         Console.WriteLine(new string('\t', level) + $"Internal Node at [{xMin},{yMin}] to [{xMax},{yMax}]");
         foreach (var child in Children)
         {
+            /// The depth level for indentation in the dump output.
             child.Dump(level + 1);
         }
     }
