@@ -3,9 +3,9 @@ namespace Quadtree.Tests;
 public class QuadtreeTests
 {
     [Fact]
-    public void TestInsertRectangle()
+    public void TestInsertRectangles()
     {
-        var quadtree = new Quadtree();
+        var quadtree = new Quadtree(0, 0, 100, 100, 4);
         var rect = new Rectangle(10, 10, 5, 5);
         quadtree.Insert(rect);
 
@@ -14,9 +14,9 @@ public class QuadtreeTests
     }
 
     [Fact]
-    public void TestDeleteRectangle()
+    public void TestDeleteRectangles()
     {
-        var quadtree = new Quadtree();
+        var quadtree = new Quadtree(0, 0, 100, 100,4);
         var rect = new Rectangle(10, 10, 5, 5);
         quadtree.Insert(rect);
 
@@ -25,3 +25,4 @@ public class QuadtreeTests
         Assert.Null(foundRect);
     }
 }
+
