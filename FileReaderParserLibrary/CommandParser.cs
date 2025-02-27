@@ -1,34 +1,45 @@
-namespace FileReaderParserLibrary;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
-/// <summary>
-/// [TODO:description]
-/// </summary>
-public class CommandParser
+namespace FileReaderParserLibrary
 {
-    /// <summary>
-    /// [TODO:description]
-    /// </summary>
-    /// <param name="filePath">[TODO:description]</param>
-    /// <returns>[TODO:description]</returns>
-    public List<string> ParseCommands(string filePath)
+    /// The CommandParser class is responsible for reading a file and parsing its content
+    /// into a list of command strings. Each command is expected to be on a separate line.
+    public class CommandParser
     {
-        var commands = new List<string>();
-        try
+        
+        /// Parses a file and extracts each non-empty line as a command.
+        /// Lines with only whitespace are ignored. The resulting list
+        /// contains the commands as strings.
+    
+        ///The file path of the text file to be parsed.
+        public List<string> ParseCommands(string filePath)
         {
-            var lines = File.ReadAllLines(filePath);
-            foreach (var line in lines)
+            // A list to store the parsed commands.
+            var commands = new List<string>(); 
+            try
             {
-                if (!string.IsNullOrWhiteSpace(line))
+                // Read all lines from the specified file.
+                var lines = File.ReadAllLines(filePath);
+                
+                foreach (var line in lines)
                 {
-                    commands.Add(line.Trim());
+                    // Add the line to the command list after trimming any leading/trailing whitespace.
+                    if (!string.IsNullOrWhiteSpace(line))
+                    {
+                        commands.Add(line.Trim());
+                    }
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error reading file: {ex.Message}");
-        }
+            catch (Exception ex)
+            {
+                // Catch any exception that occurs while reading the file and log the error message.
+                Console.WriteLine($"Error reading file: {ex.Message}");
+            }
 
-        return commands;
+            // Return the list of parsed commands.
+            return commands;
+        }
     }
 }
