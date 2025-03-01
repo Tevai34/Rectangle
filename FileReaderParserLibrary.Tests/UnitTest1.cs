@@ -1,45 +1,53 @@
+namespace FileReaderParserLibrary.Tests;
+
+using System;
 using System.IO;
-using FileReaderParserLibrary;
 using Xunit;
 
-namespace FileReaderParserLibrary.Tests
-{
+/// <summary>
+/// Unit tests for the <see cref="FileReader"/> class.
+/// </summary>
 public class FileReaderTests
+{
+    /// <summary>
+    /// Tests if the <see cref="FileReader.ReadFile"/> method correctly reads a file's content.
+    /// </summary>
+    [Fact]
+    public void TestFileReader_ReadsCorrectContent()
     {
-        [Fact]
-        public void TestFileReader_ReadsCorrectContent()
-        {
-            // Arrange: Create expected content and path to the test file
-            var expectedContent = "Hello, world!";
-            var filePath = "testfile.txt";
+        // Arrange
+        var expectedContent = "Hello, world!";
+        var filePath = "testfile.txt";
 
-            // Create a temporary file with the expected content
-            File.WriteAllText(filePath, expectedContent);  // Writing to the file system
+        File.WriteAllText(filePath, expectedContent);
 
-            // Create an instance of the FileReader class
-            var fileReader = new FileReader();
+        var fileReader = new FileReader();
 
-            // Act: Call the method that reads the file
-            var actualContent = fileReader.ReadFile(filePath);
+        // Act
+        var actualContent = fileReader.ReadFile(filePath);
 
-            // Assert: Verify the actual content matches the expected content
-            Assert.Equal(expectedContent, actualContent);
+        // Assert
+        Assert.Equal(expectedContent, actualContent);
 
-            // Clean up: Delete the test file after the test
-            File.Delete(filePath);
-        }
+        // Clean up
+        File.Delete(filePath);
+    }
 
-        [Fact]
-        public void TestFileReader_ThrowsFileNotFoundException_ForNonExistentFile()
-        {
-            // Arrange
-            var filePath = "nonexistentfile.txt";
-            var fileReader = new FileReader();
+    /// <summary>
+    /// Tests if the <see cref="FileReader.ReadFile"/> method throws a <see cref="FileNotFoundException"/>
+    /// when attempting to read a non-existent file.
+    /// </summary>
+    [Fact]
+    public void TestFileReader_ThrowsFileNotFoundException_ForNonExistentFile()
+    {
+        // Arrange
+        var filePath = "nonexistentfile.txt";
+        var fileReader = new FileReader();
 
-            // Act & Assert: Ensure a FileNotFoundException is thrown
-            Assert.Throws<FileNotFoundException>(() => fileReader.ReadFile(filePath));
-        }
+        // Act & Assert
+        Assert.Throws<FileNotFoundException>(() => fileReader.ReadFile(filePath));
     }
 }
+
 
 
