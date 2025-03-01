@@ -1,103 +1,119 @@
-namespace Quadtree;
-
-/// A class representing a leaf node in the quadtree. This node holds the rectangles
-/// and handles insertion, deletion, and updates until it splits into sub-nodes when the threshold is exceeded.
-public class LeafNode : Node
+namespace Quadtree
 {
-    // Threshold for the number of rectangles before splitting
-    private int threshold; 
-
- 
-    /// Initializes a new instance of the LeafNode class with a given space and threshold.
-    /// The minimum x-coordinate of the node's space.
-    /// The minimum y-coordinate of the node's space.
-    /// The maximum x-coordinate of the node's space.
-    /// The maximum y-coordinate of the node's space.
-  public LeafNode(int threshold, Rectangle space) 
-    : base(space.x, space.y, space.x + space.length, space.y + space.width) 
-{
-    this.threshold = threshold;
-    this.Rectangles = new List<Rectangle>();
-}
-
-
-
-    /// Inserts a rectangle into the node. If the node exceeds the threshold, it will split into sub-nodes.
-    /// The rectangle to insert into the node.
-    public override void Insert(Rectangle rect)
+    /// <summary>
+    /// Represents a leaf node in the quadtree. This node holds rectangles and handles insertion, 
+    /// deletion, and updates until it reaches the threshold, at which point it should split into sub-nodes.
+    /// </summary>
+    public class LeafNode : Node
     {
-        if (Rectangles.Count < threshold)
+        /// <summary>
+        /// The threshold for the number of rectangles before splitting.
+        /// </summary>
+        private int threshold;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LeafNode"/> class with a given space and threshold.
+        /// </summary>
+        /// <param name="threshold">The maximum number of rectangles the node can hold before splitting.</param>
+        /// <param name="space">The spatial boundaries of this node.</param>
+        public LeafNode(int threshold, Rectangle space) 
+            : base(space.x, space.y, space.x + space.length, space.y + space.width)
         {
-            // If the node is not full, insert the rectangle directly
+            this.threshold = threshold;
+            this.Rectangles = new List<Rectangle>();
+        }
+
+        /// <summary>
+        /// Inserts a rectangle into the node. If the node exceeds the threshold, it should split into sub-nodes.
+        /// </summary>
+        /// <param name="rect">The rectangle to insert into the node.</param>
+        public override void Insert(Rectangle rect)
+        {
+            if (Rectangles.Count >= threshold)
+            {
+              throw new InvalidOperationException("Node exceeds threshold, splitting required.");
+            }
             Rectangles.Add(rect);
         }
-        else
+
+        /// <summary>
+        /// Deletes a rectangle based on its coordinates from the node.
+        /// </summary>
+        /// <param name="x">The x-coordinate of the rectangle to delete.</param>
+        /// <param name="y">The y-coordinate of the rectangle to delete.</param>
+        public override void Delete(int x, int y)
         {
-            // If the node is full, we should notify the parent node to handle the split
-            // This is where you would call the parent node's split function, but we don't do this here
-            Console.WriteLine("Node exceeds threshold, should handle split logic outside of LeafNode.");
+            var rect = Rectangles.FirstOrDefault(r => r.x == x && r.y == y);
+            if (rect != null)
+            {
+                Rectangles.Remove(rect);
+                Console.WriteLine($"Rectangle at ({x}, {y}) deleted.");
+            }
+            else
+            {
+                Console.WriteLine($"No rectangle found at ({x}, {y}) to delete.");
+            }
         }
-    }
 
-    /// Deletes a rectangle based on its coordinates from the node.
-    /// The x-coordinate of the rectangle to delete.
-    /// The y-coordinate of the rectangle to delete.
-    public override void Delete(int x, int y)
-    {
-        var rect = Rectangles.FirstOrDefault(r => r.x == x && r.y == y);
-        if (rect != null)
+        /// <summary>
+        /// Deletes a specific rectangle from the node.
+        /// </summary>
+        /// <param name="rect">The rectangle to delete.</param>
+        public void Delete(Rectangle rect)
         {
-            Rectangles.Remove(rect);
-            Console.WriteLine($"Rectangle at ({x}, {y}) deleted.");
+            Delete(rect.x, rect.y);
         }
-        else{
-            Console.WriteLine($"No rectangle found at ({x}, {y}) to delete.");
-        }
-    }
 
-    public void Delete(Rectangle rect)
-{
-    // Call the existing Delete method
-    Delete(rect.x, rect.y); 
-}
-
-
-
-    /// Dumps the list of rectangles in the current node.
-    ///The current depth level of the node, used for indentation in output.
-    public override void Dump(int level)
-    {Console.WriteLine(new string('\t', level) + $"Leaf Node at [{xMin},{yMin}] to [{xMax},{yMax}]");
-        foreach (var rect in Rectangles)
+        /// <summary>
+        /// Dumps the list of rectangles in the current node.
+        /// </summary>
+        /// <param name="level">The current depth level of the node, used for indentation in output.</param>
+        public override void Dump(int level)
         {
-            Console.WriteLine(new string('\t', level) + $"Rectangle at {rect.x}, {rect.y}: {rect.length}x{rect.width}");
+            Console.WriteLine(new string('\t', level) + $"Leaf Node at [{xMin},{yMin}] to [{xMax},{yMax}]");
+            foreach (var rect in Rectangles)
+            {
+                Console.WriteLine(new string('\t', level) + $"Rectangle at {rect.x}, {rect.y}: {rect.length}x{rect.width}");
+            }
         }
-    }
 
-    /// Updates the dimensions of a rectangle in the node.
-    /// The x-coordinate of the rectangle to update.
-    /// The y-coordinate of the rectangle to update.
-    public override void Update(int x, int y, int length, int width)
-    {
-        var rect = Rectangles.FirstOrDefault(r => r.x == x && r.y == y);
-        if (rect != null)
+        /// <summary>
+        /// Updates the dimensions of a rectangle in the node.
+        /// </summary>
+        /// <param name="x">The x-coordinate of the rectangle to update.</param>
+        /// <param name="y">The y-coordinate of the rectangle to update.</param>
+        /// <param name="length">The new length of the rectangle.</param>
+        /// <param name="width">The new width of the rectangle.</param>
+        public override void Update(int x, int y, int length, int width)
         {
-            /// The new length of the rectangle.
-            rect.length = length;
-            /// The new width of the rectangle.
-            rect.width = width;
-            Console.WriteLine($"Updated rectangle at ({x}, {y}) to {length}x{width}.");
+            var rect = Rectangles.FirstOrDefault(r => r.x == x && r.y == y);
+            if (rect != null)
+            {
+                rect.length = length;
+                rect.width = width;
+                Console.WriteLine($"Updated rectangle at ({x}, {y}) to {length}x{width}.");
+            }
+            else
+            {
+                Console.WriteLine($"No rectangle found at ({x}, {y}) to update.");
+            }
         }
-        else{
-            Console.WriteLine($"No rectangle found at ({x}, {y}) to update.");
-        }
-    }
 
-/// Finds a rectangle by its coordinates in the current node. 
-/// The x-coordinate of the rectangle to find.
-/// The y-coordinate of the rectangle to find.
-    public override Rectangle Find(int x, int y)
-    {
-        ///The found rectangle, or null if no rectangle exists at the given coordinates
-        return Rectangles.FirstOrDefault(r => r.x == x && r.y == y);
+        /// <summary>
+        /// Finds a rectangle by its coordinates in the current node.
+        /// </summary>
+        /// <param name="x">The x-coordinate of the rectangle to find.</param>
+        /// <param name="y">The y-coordinate of the rectangle to find.</param>
+        /// <returns>The found rectangle, or <c>null</c> if no rectangle exists at the given coordinates.</returns>
+        public override Rectangle? Find(int x, int y)        
+        {
+            foreach (var rect in Rectangles)
+            {
+                if (rect.x == x && rect.y == y)
+            return rect;
+            }
+            return null;
+        }
+        
     }
 }
