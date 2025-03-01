@@ -1,143 +1,195 @@
+using System;
+using System.Collections.Generic;
 using FileReaderParserLibrary;
 using Quadtree;
 
-namespace QuadtreeCLI;
-
-class Program
+namespace QuadtreeCLI
 {
-    static void Main(string[] args)
+    /// <summary>
+    /// The main entry point for the Quadtree command-line interface (CLI).
+    /// Reads commands from a file and processes them using a Quadtree structure.
+    /// </summary>
+    class Program
     {
-        // Parse the .cmmd file, process each command.
-        // Initialize the quadtree, e.g., create a root LeafNode with the initial space.
-
-        // Validate the command-line argument
-        if (args.Length != 1)
+        /// <summary>
+        /// The main method that starts the QuadtreeCLI program.
+        /// </summary>
+        /// <param name="args">Command-line arguments. Expects a single argument: the path to a command file.</param>
+        static void Main(string[] args)
         {
-            Console.WriteLine("Please provide the path to the .cmmd file.");
-            return;
+            if (args.Length != 1)
+            {
+                Console.WriteLine("Usage: QuadtreeCLI <path_to_cmmd_file>");
+                return;
+            }
+
+            string filePath = args[0];
+
+            // Parse commands from the file using the static method
+            var commands = CommandParser.ParseCommands(filePath);
+
+            if (commands.Count == 0)
+            {
+                Console.WriteLine("No commands found in the file.");
+                return;
+            }
+
+            // Initialize the quadtree
+            var initialSpace = new Rectangle(-50, -50, 100, 100);
+            var quadtree = new LeafNode(5, initialSpace);
+
+            // Process each command
+            foreach (var command in commands)
+            {
+                try
+                {
+                    var commandParts = command.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    if (commandParts.Length == 0) continue;
+
+                    string action = commandParts[0].ToLower();
+
+                    switch (action)
+                    {
+                        case "insert":
+                            ProcessInsertCommand(commandParts, quadtree);
+                            break;
+
+                        case "delete":
+                            ProcessDeleteCommand(commandParts, quadtree);
+                            break;
+
+                        case "find":
+                            ProcessFindCommand(commandParts, quadtree);
+                            break;
+
+                        case "update":
+                            ProcessUpdateCommand(commandParts, quadtree);
+                            break;
+
+                        case "dump":
+                            quadtree.Dump(0);
+                            break;
+
+                        default:
+                            Console.WriteLine($"Unknown command: {action}");
+                            break;
+                    }
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine($"Error: Invalid number format in command: {command}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unexpected error processing command '{command}': {ex.Message}");
+                }
+            }
         }
 
-        string filePath = args[0];
-
-        // Parse the commands from the file
-        var commandParser = new CommandParser();
-        var commands = commandParser.ParseCommands(filePath);
-
-        // Initialize a quadtree with the initial space (100x100, centered at (0, 0))
-        var initialSpace = new Rectangle(-50, -50, 100, 100); // The root space of the quadtree
-        //NOTE: I recommend you add an additional constructor to the LeafNode class that takes
-        //a threshold and a rectangle space.
-        //
-        //NOTE: You'll want a real quadtree class, otherwise, things will get complicated.
-        var quadtree = new LeafNode(5, initialSpace); // Threshold of 5 rectangles before split
-
-        // Process each command from the file
-        foreach (var command in commands)
+        /// <summary>
+        /// Processes an "insert" command by adding a new rectangle to the Quadtree.
+        /// </summary>
+        /// <param name="commandParts">An array of command parameters.</param>
+        /// <param name="quadtree">The Quadtree instance.</param>
+        private static void ProcessInsertCommand(string[] commandParts, LeafNode quadtree)
         {
-            var commandParts = command.Split(' ');
-            var action = commandParts[0].ToLower();
-
-            switch (action)
+            if (commandParts.Length == 5 &&
+                int.TryParse(commandParts[1], out int x) &&
+                int.TryParse(commandParts[2], out int y) &&
+                int.TryParse(commandParts[3], out int width) &&
+                int.TryParse(commandParts[4], out int height))
             {
-                case "insert":
-                    if (commandParts.Length == 5)
-                    {
-                        int x = int.Parse(commandParts[1]);
-                        int y = int.Parse(commandParts[2]);
-                        int width = int.Parse(commandParts[3]);
-                        int height = int.Parse(commandParts[4]);
+                var rect = new Rectangle(x, y, width, height);
+                quadtree.Insert(rect);
+            }
+            else
+            {
+                Console.WriteLine("Invalid Insert command format.");
+            }
+        }
 
-                        var rect = new Rectangle(x, y, width, height);
-                        // Insert the rectangle into the quadtree
-                        quadtree.Insert(rect); 
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid Insert command format.");
-                    }
-                    break;
+        /// <summary>
+        /// Processes a "delete" command by removing a rectangle from the Quadtree.
+        /// </summary>
+        /// <param name="commandParts">An array of command parameters.</param>
+        /// <param name="quadtree">The Quadtree instance.</param>
+        private static void ProcessDeleteCommand(string[] commandParts, LeafNode quadtree)
+        {
+            if (commandParts.Length == 3 &&
+                int.TryParse(commandParts[1], out int x) &&
+                int.TryParse(commandParts[2], out int y))
+            {
+                var rect = quadtree.Find(x, y);
+                if (rect != null)
+                {
+                    quadtree.Delete(rect);
+                }
+                else
+                {
+                    Console.WriteLine($"Nothing to delete at {x}, {y}.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid Delete command format.");
+            }
+        }
 
-                case "delete":
-                    if (commandParts.Length == 3)
-                    {
-                        int x = int.Parse(commandParts[1]);
-                        int y = int.Parse(commandParts[2]);
+        /// <summary>
+        /// Processes a "find" command by searching for a rectangle at the given coordinates.
+        /// </summary>
+        /// <param name="commandParts">An array of command parameters.</param>
+        /// <param name="quadtree">The Quadtree instance.</param>
+        private static void ProcessFindCommand(string[] commandParts, LeafNode quadtree)
+        {
+            if (commandParts.Length == 3 &&
+                int.TryParse(commandParts[1], out int x) &&
+                int.TryParse(commandParts[2], out int y))
+            {
+                var rect = quadtree.Find(x, y);
+                if (rect != null)
+                {
+                    Console.WriteLine($"Rectangle at {x}, {y}: {rect.width}x{rect.length}");
+                }
+                else
+                {
+                    Console.WriteLine($"Nothing is at {x}, {y}.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid Find command format.");
+            }
+        }
 
-                        var rect = quadtree.Find(x, y); // Find the rectangle by its coordinates
-                        if (rect != null)
-                        {
-                            quadtree.Delete(rect); // Delete the rectangle
-                            //NOTE: you need to add a delete function to
-                            //leafnode that takes a Rectangle.
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Nothing to delete at {x}, {y}.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid Delete command format.");
-                    }
-                    break;
-
-                case "find":
-                    if (commandParts.Length == 3)
-                    {
-                        int x = int.Parse(commandParts[1]);
-                        int y = int.Parse(commandParts[2]);
-
-                        var rect = quadtree.Find(x, y); // Find the rectangle
-                        if (rect != null)
-                        {
-                            Console.WriteLine($"Rectangle at {x}, {y}: {rect.length}x{rect.width}");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Nothing is at {x}, {y}.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid Find command format.");
-                    }
-                    break;
-
-                case "update":
-                    if (commandParts.Length == 5)
-                    {
-                        int x = int.Parse(commandParts[1]);
-                        int y = int.Parse(commandParts[2]);
-                        int newWidth = int.Parse(commandParts[3]);
-                        int newHeight = int.Parse(commandParts[4]);
-                        
-                        // Find the rectangle
-                        var rect = quadtree.Find(x, y); 
-                        if (rect != null)
-                        {
-                            // Update the rectangle
-                            quadtree.Update(x, y, newWidth, newHeight); 
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Nothing to update at {x}, {y}.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid Update command format.");
-                    }
-                    break;
-
-                case "dump":
-                // Dump the entire quadtree structure
-                    quadtree.Dump(0); 
-                    break;
-
-                default:
-                    Console.WriteLine($"Unknown command: {action}");
-                    break;
+        /// <summary>
+        /// Processes an "update" command by modifying a rectangle's dimensions in the Quadtree.
+        /// </summary>
+        /// <param name="commandParts">An array of command parameters.</param>
+        /// <param name="quadtree">The Quadtree instance.</param>
+        private static void ProcessUpdateCommand(string[] commandParts, LeafNode quadtree)
+        {
+            if (commandParts.Length == 5 &&
+                int.TryParse(commandParts[1], out int x) &&
+                int.TryParse(commandParts[2], out int y) &&
+                int.TryParse(commandParts[3], out int newWidth) &&
+                int.TryParse(commandParts[4], out int newHeight))
+            {
+                var rect = quadtree.Find(x, y);
+                if (rect != null)
+                {
+                    quadtree.Update(x, y, newWidth, newHeight);
+                }
+                else
+                {
+                    Console.WriteLine($"Nothing to update at {x}, {y}.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid Update command format.");
             }
         }
     }
 }
+
