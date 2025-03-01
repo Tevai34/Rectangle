@@ -1,22 +1,26 @@
 namespace FileReaderParserLibrary;
+
+using System;
 using System.IO;
 
-    /// A class for reading content from a file.
-    public class FileReader
+/// <summary>
+/// A class for reading content from a file.
+/// </summary>
+public class FileReader
+{
+    /// <summary>
+    /// Reads the entire content of the specified file.
+    /// </summary>
+    /// <param name="filePath">The path of the file to read.</param>
+    /// <returns>A string containing the content of the file.</returns>
+    /// <exception cref="FileNotFoundException">Thrown if the specified file is not found.</exception>
+    public string ReadFile(string filePath)
     {
-
-        /// Reads the entire content of the specified file.
-        /// The path of the file to read.
-        /// A string containing the content of the file.
-        public string ReadFile(string filePath)
+        if (!File.Exists(filePath))
         {
-            // Check if the file exists
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException("The specified file was not found.", filePath);
-            }
-
-            // Read all text from the file and return it
-            return File.ReadAllText(filePath);
+            throw new FileNotFoundException("The specified file was not found.", filePath);
         }
+
+        return File.ReadAllText(filePath);
     }
+}
