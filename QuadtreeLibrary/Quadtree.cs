@@ -1,68 +1,86 @@
-namespace Quadtree;
-
-/// Represents a Quadtree data structure used for spatial partitioning.
-/// A quadtree is a tree data structure in which each internal node has exactly four children.
-/// It is commonly used to part a two-dimensional space by recursively subdividing it into four quadrants.
-/// This class serves as the main entry point for managing and interacting with the quadtree.
-public class Quadtree
+namespace Quadtree
 {
-    /// The root node of the quadtree, which can be either an InternalNode or LeafNode.
-    private Node root;
-
-    /// The maximum number of rectangles a node can hold before splitting.
-    private int threshold;
-
-    /// Initializes a new instance of the class.
-    /// The minimum x-coordinate of the quadtree.
-    /// The minimum y-coordinate of the quadtree.
-    /// The maximum x-coordinate of the quadtree.
-    /// The maximum y-coordinate of the quadtree.
-    /// The threshold for splitting nodes.
-    public Quadtree(int xMin, int yMin, int xMax, int yMax, int threshold)
+    /// <summary>
+    /// Represents a Quadtree data structure used for spatial partitioning.
+    /// A quadtree is a tree data structure in which each internal node has exactly four children.
+    /// It is commonly used to partition a two-dimensional space by recursively subdividing it into four quadrants.
+    /// This class serves as the main entry point for managing and interacting with the quadtree.
+    /// </summary>
+    public class Quadtree
     {
-        this.threshold = threshold;
-        root = new InternalNode(xMin, yMin, xMax, yMax, threshold);
-    }
+        /// <summary>
+        /// The root node of the quadtree, which can be either an <see cref="InternalNode"/> or <see cref="LeafNode"/>.
+        /// </summary>
+        private Node root;
 
-    /// Inserts a rectangle into the quadtree.
-    /// The rectangle to insert.
-    public void Insert(Rectangle rect)
-    {
-        root.Insert(rect);
-    }
+        /// <summary>
+        /// The maximum number of rectangles a node can hold before splitting.
+        /// </summary>
+        private int threshold;
 
-    /// Deletes a rectangle from the quadtree based on its coordinates.
-    /// The x-coordinate of the rectangle.
-    /// The y-coordinate of the rectangle.
-    public void Delete(int x, int y)
-    {
-        root.Delete(x, y);
-    }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Quadtree"/> class.
+        /// </summary>
+        /// <param name="xMin">The minimum x-coordinate of the quadtree.</param>
+        /// <param name="yMin">The minimum y-coordinate of the quadtree.</param>
+        /// <param name="xMax">The maximum x-coordinate of the quadtree.</param>
+        /// <param name="yMax">The maximum y-coordinate of the quadtree.</param>
+        /// <param name="threshold">The threshold for splitting nodes.</param>
+        public Quadtree(int xMin, int yMin, int xMax, int yMax, int threshold)
+        {
+            this.threshold = threshold;
+            root = new InternalNode(xMin, yMin, xMax, yMax, threshold);
+        }
 
-    /// Finds a rectangle in the quadtree based on its coordinates.
-    /// The x-coordinate of the rectangle.
-    /// The y-coordinate of the rectangle.
-    
-    public Rectangle Find(int x, int y)
-    {
-        /// The rectangle if found, otherwise null.
-        return root.Find(x, y);
-    }
+        /// <summary>
+        /// Inserts a rectangle into the quadtree.
+        /// </summary>
+        /// <param name="rect">The rectangle to insert.</param>
+        public void Insert(Rectangle rect)
+        {
+            root.Insert(rect);
+        }
 
-    /// Updates the size of a rectangle in the quadtree.
-    /// The x-coordinate of the rectangle.
-    /// The y-coordinate of the rectangle.
-    /// The new length of the rectangle.
-    /// The new width of the rectangle.
-    public void Update(int x, int y, int length, int width)
-    {
-        root.Update(x, y, length, width);
-    }
+        /// <summary>
+        /// Deletes a rectangle from the quadtree based on its coordinates.
+        /// </summary>
+        /// <param name="x">The x-coordinate of the rectangle.</param>
+        /// <param name="y">The y-coordinate of the rectangle.</param>
+        public void Delete(int x, int y)
+        {
+            root.Delete(x, y);
+        }
 
-    /// Dumps the structure of the quadtree for debugging purposes.
-    public void Dump()
-    {
-        root.Dump(0);
+        /// <summary>
+        /// Finds a rectangle in the quadtree based on its coordinates.
+        /// </summary>
+        /// <param name="x">The x-coordinate of the rectangle.</param>
+        /// <param name="y">The y-coordinate of the rectangle.</param>
+        /// <returns>The found rectangle if it exists; otherwise, <c>null</c>.</returns>
+        public Rectangle Find(int x, int y)
+        {
+            return root.Find(x, y);
+        }
+
+        /// <summary>
+        /// Updates the size of a rectangle in the quadtree.
+        /// </summary>
+        /// <param name="x">The x-coordinate of the rectangle.</param>
+        /// <param name="y">The y-coordinate of the rectangle.</param>
+        /// <param name="length">The new length of the rectangle.</param>
+        /// <param name="width">The new width of the rectangle.</param>
+        public void Update(int x, int y, int length, int width)
+        {
+            root.Update(x, y, length, width);
+        }
+
+        /// <summary>
+        /// Dumps the structure of the quadtree for debugging purposes.
+        /// </summary>
+        public void Dump()
+        {
+            root.Dump(0);
+        }
     }
 }
 
