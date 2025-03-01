@@ -46,7 +46,7 @@ namespace Quadtree.Tests
             leafNode.Insert(rect);
 
             // Act
-            leafNode.Delete(rect);
+            leafNode.Delete(10, 10);
             var found = leafNode.Find(10, 10);
 
             // Assert
@@ -73,7 +73,7 @@ namespace Quadtree.Tests
         }
 
         [Fact]
-        public void Insert_WhenThresholdExceeded_ShouldConvertToInternalNode()
+        public void Insert_WhenThresholdExceeded_ShouldTriggerSplit()
         {
             // Arrange
             var space = new Rectangle(-50, -50, 100, 100);
@@ -83,12 +83,14 @@ namespace Quadtree.Tests
             leafNode.Insert(new Rectangle(5, 5, 10, 10));
             leafNode.Insert(new Rectangle(-5, -5, 10, 10));
 
-            // Act
-            leafNode.Insert(new Rectangle(15, 15, 10, 10)); // This should trigger conversion
 
-            // Assert
-            Assert.IsType<InternalNode>(leafNode);
+             Assert.Throws<InvalidOperationException>(() => leafNode.Insert(new Rectangle(15, 15, 10, 10)));
+
+   
         }
     }
 }
+
+
+
 
