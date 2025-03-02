@@ -30,7 +30,7 @@ public class CommandParser
             {
                 if (!string.IsNullOrWhiteSpace(line))
                 {
-                    string cleanLine = line.Trim().TrimEnd(',');
+                    string cleanLine = line.Trim().TrimEnd(';');
                     commands.Add(cleanLine);
                 }
             }
