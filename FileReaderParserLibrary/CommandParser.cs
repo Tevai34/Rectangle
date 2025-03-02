@@ -30,8 +30,8 @@ public class CommandParser
             {
                 if (!string.IsNullOrWhiteSpace(line))
                 {
-                    // Trim whitespace but no need for semicolon removal
-                    commands.Add(line.Trim()); 
+                    string cleanLine = line.Trim().TrimEnd(',');
+                    commands.Add(cleanLine);
                 }
             }
         }
